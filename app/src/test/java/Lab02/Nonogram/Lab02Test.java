@@ -13,7 +13,7 @@ public class Lab02Test {
         int[][] columns = {{0,1}, {0,1}, {0,1}, {0,1}, {0,1}}; 
         int[][] rows = {{0,5}};
         boolean[][] result = {{true,true,true,true,true}, {}};
-        //assertEquals(result, Lab02.solveNonogram(columns, rows));
+        assertEquals(result, solveNonogram(columns, rows));
     }
     
     
