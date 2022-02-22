@@ -54,12 +54,5 @@ public class Lab02{
   }
   
   public static void main(String[] args){
-    int[][] columns = {{0,1}, {0,1}, {0,1}, {0,1}, {0,1}};
-    int[][] rows = {{0,0}, {0,0}, {0,0}};
-    boolean[][] result = {{true,true,true,true,true}, {}};
-    boolean[][] solve = solveNonogram(columns, rows);
-    for (boolean[] booleans : solve) {
-      System.out.println(Arrays.toString(booleans));
-    }
   }
 }
