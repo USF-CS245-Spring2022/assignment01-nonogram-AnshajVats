@@ -31,17 +31,8 @@ public class Lab02 {
   }
 
   private void removeBlock(int row, int col, int blockSize) {
-    for (int i = board.length - 1; i >= 0; i--) {
-      if (board[i][col]) {
-        for (int j = i; j >= 0; j--) {
-          if (!board[j][col]) {
-            return;
-          } else {
-            board[j][col] = false;
-          }
-        }
-      }
-
+    for (int i = 0; i < blockSize; i++) {
+      board[row][col + i] = false;
     }
 
   }
@@ -56,6 +47,7 @@ public class Lab02 {
       return true;
     }
     int blockSize = rows[row][block];
+    int addedBlockSizeColumn = col + blockSize + 1;
     if (blockSize == 0) {
       if (solve(row, col, 1)) {
         return true;
@@ -65,11 +57,24 @@ public class Lab02 {
       for (int i = 0; i < blockSize; i++) {
         board[row][col + i] = true;
       }
-      if (solve(row, col + blockSize + 1, 1)) {
+      if(block == 0 && col + blockSize + 1 >= numCols){
+        addedBlockSizeColumn = 0;
+      }
+      if (solve(row, addedBlockSizeColumn, 1)) {
         return true;
       }
+      else {
+        removeBlock(row, col, blockSize);
+        if(solve(row, col + 1, block)){
+          return true;
+        }
+      }
     }
-    removeBlock(row, col, blockSize);
+    else {
+     if(solve(row, col + 1,block)){
+       return false;
+     }
+    }
     return false;
   }
 
@@ -87,11 +92,11 @@ public class Lab02 {
 
 
   public boolean isSafe(int row, int col, int blockSize) {
-    if (blockSize + row > numCols) {
+    if (blockSize + col > numCols) {
       return false;
     }
 
-    for (int i = col; i < blockSize; i++) {
+    for (int i = col; i < col + blockSize; i++) {
       if (!isColumn(row, i)) {
         return false;
       }
@@ -125,6 +130,7 @@ public class Lab02 {
     while (!board[rows][i] && i < numCols) {
       count3++;
       i++;
+      if (i >= numCols) return true;
     }
 
     while (board[rows][i]) {
@@ -144,8 +150,8 @@ public class Lab02 {
     int count2 = 0;
     int count3 = 0;
     int count4 = 0;
-    int firstValue = columns[rows][0];
-    int secondValue = columns[rows][1];
+    int firstValue = columns[col][0];
+    int secondValue = columns[col][1];
     if (rows > numRows) {//this is a issue.
       return false;
     }
@@ -166,6 +172,12 @@ public class Lab02 {
     while (!board[i][col] && i < numRows) {
       count3++;
       i++;
+      if (i >= numRows) {
+        if (secondValue != 0 && count2 < secondValue) {//issue for test03. 
+          return true;
+        }
+        return false;
+      }
     }
 
     while (board[i][col]) {
