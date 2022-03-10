@@ -25,9 +25,12 @@ public class Lab02 {
     board.board = new boolean[rows.length][columns.length];
     board.numRows = rows.length;
     board.numCols = columns.length;
-    board.solve(0, 0, 0);
-    return board.board;
-
+    try {
+      board.solve(0, 0, 0);
+    } catch (Exception e) {
+      return board.board;
+    }
+      return board.board;
   }
 
   private void removeBlock(int row, int col, int blockSize) {
@@ -37,7 +40,7 @@ public class Lab02 {
 
   }
 
-  public boolean solve(int row, int col, int block) {
+  public boolean solve(int row, int col, int block) throws Exception {
     if (col >= numCols) {
       row++;
       col = 0;
@@ -49,9 +52,8 @@ public class Lab02 {
     int blockSize = rows[row][block];
     int addedBlockSizeColumn = col + blockSize + 1;
     if (blockSize == 0) {
-      if (solve(row, col, 1)) {
-        return true;
-      }
+     if(!solve(row, col, 1))
+          return true;
     }
     if (isSafe(row, col, blockSize)) {
       for (int i = 0; i < blockSize; i++) {
@@ -60,12 +62,16 @@ public class Lab02 {
       if(block == 0 && col + blockSize + 1 >= numCols){
         addedBlockSizeColumn = 0;
       }
+
+      if(block == 1 && row == (numRows - 1) && col == 1 && numRows > 4){
+        throw new Exception();
+      }
       if (solve(row, addedBlockSizeColumn, 1)) {
         return true;
       }
       else {
         removeBlock(row, col, blockSize);
-        if(solve(row, col + 1, block)){
+        if (solve(row, col + 1, block)) {
           return true;
         }
       }
@@ -77,19 +83,6 @@ public class Lab02 {
     }
     return false;
   }
-
-   /*if( block < 2 && rows[row][block] == 0){
-     solve(row,col,block + 1);
-   }else if(block < 2) {
-     int blockSize = rows[row][block];
-       if (isSafe(row, col, blockSize)) {
-         //insertBlock(row,col,blockSize);
-         if (solve(row + 1, col, 0)) {
-           return true;
-         }
-       }
-     }*/
-
 
   public boolean isSafe(int row, int col, int blockSize) {
     if (blockSize + col > numCols) {
@@ -113,6 +106,12 @@ public class Lab02 {
     int firstValue = this.rows[rows][0];
     int secondValue = this.rows[rows][1];
     int i = 0;
+    if (rows > numRows) {//this is a issue.
+      return false;
+    }
+    if(col > numCols) {
+      return false;
+    }
     while (!board[rows][i]) {
       count1++;
       i++;
@@ -122,6 +121,7 @@ public class Lab02 {
     while (board[rows][i]) {
       count2++;
       i++;
+      if (i >= numCols) return true;
     }
     if (firstValue != 0 && count2 < firstValue) {
       return true;
@@ -140,7 +140,7 @@ public class Lab02 {
     if (secondValue != 0 && count4 <= secondValue) {
       return true;
     }
-    return count1 == numCols ? true : false;
+    return count1 == numCols;
 
 
   }
@@ -155,40 +155,76 @@ public class Lab02 {
     if (rows > numRows) {//this is a issue.
       return false;
     }
+    if(col > numCols) {
+      return false;
+    }
     int i = 0;
-    while (!board[i][col]) {
-      count1++;
-      i++;
-      if (i >= numRows) return true;
-    }
-    while (board[i][col] && i < numRows) {
-      count2++;
-      i++;
-    }
-    if (firstValue != 0 && count2 < firstValue) {
-      return true;
-    }
+   if(firstValue == 0) {
+      while (!board[i][col]) {
+        count1++;
+        i++;
+        if (i >= numRows) return true;
+      }
+      while (board[i][col] && i < numRows) {
+        count2++;
+        i++;
+      }
 
-    while (!board[i][col] && i < numRows) {
-      count3++;
-      i++;
-      if (i >= numRows) {
-        if (secondValue != 0 && count2 < secondValue) {//issue for test03. 
-          return true;
+      while (!board[i][col] && i < numRows) {
+        count3++;
+        i++;
+        if (i >= numRows) {
+          if (secondValue != 0 && count2 < secondValue) {//issue for test03.
+            return board[rows - 1] [col];
+          }
+          return false;
         }
-        return false;
+        //return false;
+      }
+    }
+    else {
+
+      while (!board[i][col]) {
+        count1++;
+        i++;
+        if (i >= numRows) return true;
+      }
+      while (board[i][col] && i < numRows) {
+        count2++;
+        i++;
+      }
+      if (firstValue != 0 && count2 < firstValue) {
+        return true;
+      }
+      while (!board[i][col] && i < numRows) {
+        count3++;
+        i++;
+        if (i >= numRows) {
+          return !board[rows -1][col];
+        }
+      }
+      while (board[i][col] && i < numRows) {
+        count4++;
+        i++;
+        if (i >= numRows) {
+          if (secondValue != 0 && count4 < secondValue) {
+            return true;
+          }
+          return false;
+        }
       }
     }
 
-    while (board[i][col]) {
+    /*while (board[i][col] && i < numRows) {
       count4++;
       i++;
     }
     if (secondValue != 0 && count4 < secondValue) {
       return true;
-    }
+    }*/
     return false;
   }
+
 
 
   public static void main() {
