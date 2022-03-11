@@ -53,7 +53,6 @@ public class Lab02 {
      * @throws Exception To handle the case if the board is solved and saves time complexity.
      */
     public boolean solve(int row, int col, int block) {
-        System.out.println("solve " + row + " " + col + " " + block);
         if (col >= numCols)
             return false;
         if (block > 1) {
@@ -76,13 +75,9 @@ public class Lab02 {
 
             if (isSafe(row, j, blockSize)) {
                 // paint
-                System.out.println("painting " + row + " " + j + " " + blockSize);
                 for (int i = 0; i < blockSize; i++) {
                     board[row][j + i] = true;
                 }
-                //if(j+ blockSize +1 >= numCols && block == 0) {
-                //  return false;
-                //}
                 int nextrow = row;
                 int nextcol = col;
                 int nextblock = block;
@@ -98,7 +93,6 @@ public class Lab02 {
                     return true;
                 }
                 //undo paint
-                System.out.println("undoing " + row + " " + j + " " + blockSize);
                 for (int i = 0; i < blockSize; i++) {
                     board[row][j + i] = false;
                 }
@@ -115,13 +109,11 @@ public class Lab02 {
      * @return true if it is safe false otherwise.
      */
     public boolean isSafe(int row, int col, int blockSize) {
-        System.out.println("isSafe" + " " + row + " " + col + " " + blockSize);
         if (blockSize + col > numCols) {
             return false;
         }
         for (int i = col; i < col + blockSize; i++) {
             if (!isColumn(row, i)) {
-                System.out.println("Print" + i + "row" + row);
                 return false;
             }
         }
@@ -197,6 +189,7 @@ public class Lab02 {
         return false;
 
     }
+
 
     public static void main() {
         int[][] columns = {{0, 1}, {0, 1}, {0, 1}, {0, 1}, {0, 1}};
