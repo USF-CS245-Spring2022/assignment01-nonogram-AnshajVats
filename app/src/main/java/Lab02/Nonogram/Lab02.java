@@ -5,7 +5,9 @@ package Lab02.Nonogram;
 // Version 5: added comments.
 //CS245 Lab02: Nonogram
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Lab02 {
     int[][] rows;
@@ -25,11 +27,8 @@ public class Lab02 {
         board.board = new boolean[rows.length][columns.length];
         board.numRows = rows.length;
         board.numCols = columns.length;
-        try {
             board.solve(0, 0, 0);
-        } catch (Exception e) {
-            return board.board;
-        }
+
         return board.board;
     }
 
@@ -53,42 +52,57 @@ public class Lab02 {
      * @return
      * @throws Exception To handle the case if the board is solved and saves time complexity.
      */
-    public boolean solve(int row, int col, int block) throws Exception {
-        if (col >= numCols) {
+    public boolean solve(int row, int col, int block)  {
+        System.out.println("solve "+row+" "+col+" "+block);
+        if (col>=numCols)
+            return false;
+        if (block > 1) {
             row++;
             col = 0;
             block = 0;
         }
+
         if (row >= numRows) {
             return true;
         }
         int blockSize = rows[row][block];
         int addedBlockSizeColumn = col + blockSize + 1;
         if (blockSize == 0) {
-            if (!solve(row, col, 1))
+            if (solve(row, col, 1)) // row will have at least 1 non zero number.
                 return true;
+            return false;
         }
-        if (isSafe(row, col, blockSize)) {
-            for (int i = 0; i < blockSize; i++) {
-                board[row][col + i] = true;
-            }
-            if (block == 0 && col + blockSize + 1 >= numCols) {
-                addedBlockSizeColumn = 0;
-            }
-            if (block == 1 && row == (numRows - 1) && col >= 1 && numCols > 4) {// checks if the recursion has ended or not.
-                throw new Exception();
-            }
-            if (solve(row, addedBlockSizeColumn, 1)) {
-                return true;
-            } else {
-                removeBlock(row, col, blockSize);
-                if (solve(row, col + 1, block)) {
+        for (int j = col; j+blockSize <= numCols; j++) {
+
+            if (isSafe(row, j, blockSize)) {
+                // paint
+                System.out.println("painting "+row+" "+j+" "+blockSize);
+                for (int i = 0; i < blockSize; i++) {
+                    board[row][j + i] = true;
+                }
+                //if(j+ blockSize +1 >= numCols && block == 0) {
+                  //  return false;
+                //}
+                int nextrow=row;
+                int nextcol=col;
+                int nextblock=block;
+                if (block==1) {
+                    nextrow++;
+                    nextcol=0;
+                    nextblock=0;
+                } else {
+                    nextcol=j+blockSize+1;
+                    nextblock=1;
+                }
+                if (solve(nextrow, nextcol, nextblock)) {
                     return true;
                 }
-            }
-        } else {
-            if (solve(row, col + 1, block)) {
-                return false;
+                //undo paint
+                System.out.println("undoing "+row+" "+j+" "+blockSize);
+                for (int i = 0; i < blockSize; i++) {
+                    board[row][j + i] = false;
+                }
+
             }
         }
         return false;
@@ -101,68 +115,17 @@ public class Lab02 {
      * @return true if it is safe false otherwise.
      */
     public boolean isSafe(int row, int col, int blockSize) {
+        System.out.println("isSafe"+" "+row+" "+col+" " + blockSize);
         if (blockSize + col > numCols) {
             return false;
         }
-
         for (int i = col; i < col + blockSize; i++) {
             if (!isColumn(row, i)) {
+                System.out.println("Print" + i + "row" + row);
                 return false;
             }
         }
-        return isRow(row, col);
-
-    }
-
-    /**
-     * @param rows the row to check.
-     * @param col  the block which we check is in this column.
-     * @return true if the row is safe false otherwise.
-     */
-    public boolean isRow(int rows, int col) {
-        int count1 = 0;
-        int count2 = 0;
-        int count3 = 0;
-        int count4 = 0;
-        int firstValue = this.rows[rows][0];
-        int secondValue = this.rows[rows][1];
-        int i = 0;
-        if (rows > numRows) {//this is a issue.
-            return false;
-        }
-        if (col > numCols) {
-            return false;
-        }
-        while (!board[rows][i]) {
-            count1++;
-            i++;
-
-            if (i >= numCols) return true;
-        }
-        while (board[rows][i]) {
-            count2++;
-            i++;
-            if (i >= numCols) return true;
-        }
-        if (firstValue != 0 && count2 < firstValue) {
-            return true;
-        }
-
-        while (!board[rows][i] && i < numCols) {
-            count3++;
-            i++;
-            if (i >= numCols) return true;
-        }
-
-        while (board[rows][i]) {
-            count4++;
-            i++;
-        }
-        if (secondValue != 0 && count4 <= secondValue) {
-            return true;
-        }
-        return count1 == numCols;
-
+        return true;
 
     }
 
@@ -178,69 +141,65 @@ public class Lab02 {
         int count4 = 0;
         int firstValue = columns[col][0];
         int secondValue = columns[col][1];
-        if (rows > numRows) {//this is a issue.
+        if (rows >= numRows) {//this is a issue.
             return false;
         }
-        if (col > numCols) {
+        if (col >= numCols) {
             return false;
         }
-        int i = 0;
-        if (firstValue == 0) {
-            while (!board[i][col]) {
-                count1++;
-                i++;
-                if (i >= numRows) return true;
+        List<Boolean> array = new ArrayList<>();
+        for (int i = 0; i < numRows; i++) {
+            array.add(board[i][col]);
+        }
+        int  j = 0;
+            while (!array.get(j)) {
+                j++;
+                if( j >= array.size()) return true;
             }
-            while (board[i][col] && i < numRows) {
+            while (j < array.size() && array.get(j) && firstValue != 0) {
                 count2++;
-                i++;
+                j++;
             }
-
-            while (!board[i][col] && i < numRows) {
-                count3++;
-                i++;
-                if (i >= numRows) {
-                    if (secondValue != 0 && count2 < secondValue) {//issue for test03.
-                        return board[rows - 1][col];
-                    }
-                    return false;
-                }
-                //return false;
-            }
-        } else {
-
-            while (!board[i][col]) {
-                count1++;
-                i++;
-                if (i >= numRows) return true;
-            }
-            while (board[i][col] && i < numRows) {
-                count2++;
-                i++;
-            }
-            if (firstValue != 0 && count2 < firstValue) {
+            if(firstValue != 0 && count2 < firstValue) {
                 return true;
             }
-            while (!board[i][col] && i < numRows) {
-                count3++;
-                i++;
-                if (i >= numRows) {
-                    return !board[rows - 1][col];
-                }
+
+            if(firstValue != 0 && count2 == firstValue && j  > 0 && j < array.size() &&array.get(j - 1)
+                        && j == rows)
+                return false;
+
+            while (j < array.size() && !array.get(j)) {
+                j++;
             }
-            while (board[i][col] && i < numRows) {
+
+            while (j < array.size() && array.get(j)) {
                 count4++;
-                i++;
-                if (i >= numRows) {
-                    if (secondValue != 0 && count4 < secondValue) {
-                        return true;
+                j++;
+            }
+            if(secondValue != 0 && count4 < secondValue) {
+                int lastTrue = -1;
+                if (firstValue == 0) {
+                    for (int i = 0; i < numRows; i++) {
+
+
+                        if (board[i][col]) {
+                            lastTrue = i;
+                        }
                     }
+                    if (lastTrue == (rows - 1))
+                        return true;
                     return false;
                 }
+                else return true;
             }
-        }
+            while (j < array.size() && array.get(j)) {
+                j++;
+            }
         return false;
+
     }
+
+
 
     public static void main() {
         int[][] columns = {{0, 1}, {0, 1}, {0, 1}, {0, 1}, {0, 1}};
@@ -252,3 +211,5 @@ public class Lab02 {
         }
     }
 }
+
+
