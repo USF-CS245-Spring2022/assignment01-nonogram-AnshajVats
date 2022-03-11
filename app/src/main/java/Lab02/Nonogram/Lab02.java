@@ -27,7 +27,7 @@ public class Lab02 {
         board.board = new boolean[rows.length][columns.length];
         board.numRows = rows.length;
         board.numCols = columns.length;
-            board.solve(0, 0, 0);
+        board.solve(0, 0, 0);
 
         return board.board;
     }
@@ -52,9 +52,9 @@ public class Lab02 {
      * @return
      * @throws Exception To handle the case if the board is solved and saves time complexity.
      */
-    public boolean solve(int row, int col, int block)  {
-        System.out.println("solve "+row+" "+col+" "+block);
-        if (col>=numCols)
+    public boolean solve(int row, int col, int block) {
+        System.out.println("solve " + row + " " + col + " " + block);
+        if (col >= numCols)
             return false;
         if (block > 1) {
             row++;
@@ -72,33 +72,33 @@ public class Lab02 {
                 return true;
             return false;
         }
-        for (int j = col; j+blockSize <= numCols; j++) {
+        for (int j = col; j + blockSize <= numCols; j++) {
 
             if (isSafe(row, j, blockSize)) {
                 // paint
-                System.out.println("painting "+row+" "+j+" "+blockSize);
+                System.out.println("painting " + row + " " + j + " " + blockSize);
                 for (int i = 0; i < blockSize; i++) {
                     board[row][j + i] = true;
                 }
                 //if(j+ blockSize +1 >= numCols && block == 0) {
-                  //  return false;
+                //  return false;
                 //}
-                int nextrow=row;
-                int nextcol=col;
-                int nextblock=block;
-                if (block==1) {
+                int nextrow = row;
+                int nextcol = col;
+                int nextblock = block;
+                if (block == 1) {
                     nextrow++;
-                    nextcol=0;
-                    nextblock=0;
+                    nextcol = 0;
+                    nextblock = 0;
                 } else {
-                    nextcol=j+blockSize+1;
-                    nextblock=1;
+                    nextcol = j + blockSize + 1;
+                    nextblock = 1;
                 }
                 if (solve(nextrow, nextcol, nextblock)) {
                     return true;
                 }
                 //undo paint
-                System.out.println("undoing "+row+" "+j+" "+blockSize);
+                System.out.println("undoing " + row + " " + j + " " + blockSize);
                 for (int i = 0; i < blockSize; i++) {
                     board[row][j + i] = false;
                 }
@@ -115,7 +115,7 @@ public class Lab02 {
      * @return true if it is safe false otherwise.
      */
     public boolean isSafe(int row, int col, int blockSize) {
-        System.out.println("isSafe"+" "+row+" "+col+" " + blockSize);
+        System.out.println("isSafe" + " " + row + " " + col + " " + blockSize);
         if (blockSize + col > numCols) {
             return false;
         }
@@ -151,55 +151,52 @@ public class Lab02 {
         for (int i = 0; i < numRows; i++) {
             array.add(board[i][col]);
         }
-        int  j = 0;
-            while (!array.get(j)) {
-                j++;
-                if( j >= array.size()) return true;
-            }
-            while (j < array.size() && array.get(j) && firstValue != 0) {
-                count2++;
-                j++;
-            }
-            if(firstValue != 0 && count2 < firstValue) {
-                return true;
-            }
+        int j = 0;
+        while (!array.get(j)) {
+            j++;
+            if (j >= array.size()) return true;
+        }
+        while (j < array.size() && array.get(j) && firstValue != 0) {
+            count2++;
+            j++;
+        }
+        if (firstValue != 0 && count2 < firstValue) {
+            return true;
+        }
 
-            if(firstValue != 0 && count2 == firstValue && j  > 0 && j < array.size() &&array.get(j - 1)
-                        && j == rows)
-                return false;
+        if (firstValue != 0 && count2 == firstValue && j > 0 && j < array.size() && array.get(j - 1)
+                && j == rows)
+            return false;
 
-            while (j < array.size() && !array.get(j)) {
-                j++;
-            }
+        while (j < array.size() && !array.get(j)) {
+            j++;
+        }
 
-            while (j < array.size() && array.get(j)) {
-                count4++;
-                j++;
-            }
-            if(secondValue != 0 && count4 < secondValue) {
-                int lastTrue = -1;
-                if (firstValue == 0) {
-                    for (int i = 0; i < numRows; i++) {
+        while (j < array.size() && array.get(j)) {
+            count4++;
+            j++;
+        }
+        if (secondValue != 0 && count4 < secondValue) {
+            int lastTrue = -1;
+            if (firstValue == 0) {
+                for (int i = 0; i < numRows; i++) {
 
 
-                        if (board[i][col]) {
-                            lastTrue = i;
-                        }
+                    if (board[i][col]) {
+                        lastTrue = i;
                     }
-                    if (lastTrue == (rows - 1))
-                        return true;
-                    return false;
                 }
-                else return true;
-            }
-            while (j < array.size() && array.get(j)) {
-                j++;
-            }
+                if (lastTrue == (rows - 1))
+                    return true;
+                return false;
+            } else return true;
+        }
+        while (j < array.size() && array.get(j)) {
+            j++;
+        }
         return false;
 
     }
-
-
 
     public static void main() {
         int[][] columns = {{0, 1}, {0, 1}, {0, 1}, {0, 1}, {0, 1}};
@@ -211,5 +208,4 @@ public class Lab02 {
         }
     }
 }
-
 
